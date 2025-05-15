@@ -22,7 +22,7 @@
                 <!-- Optional: Show user's name -->
                 <li><span class="dropdown-item-text">Hello, <?= session('username') ?></span></li>
                 <li><a class="dropdown-item" href="#!">Settings</a></li>
-                <li><a class="dropdown-item" href="#!">Activity Log</a></li>
+                <li><a class="dropdown-item" href="<?= base_url("changePassword") ?>">Change Password</a></li>
                 <li><hr class="dropdown-divider" /></li>
                 <li><a class="dropdown-item" href="<?= site_url('logout') ?>">Logout</a></li>
             <?php else: ?>

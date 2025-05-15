@@ -9,6 +9,8 @@ $routes->post('dologin', 'Logincontroller::dologin'); // Submit login
 $routes->get('logout', 'Logincontroller::logout'); // Logout user
 $routes->get('index', 'Logincontroller::index', ['filter' => 'auth']); // Protected dashboard
 $routes->get('/dashboard', 'Dashboard::index');
+$routes->get('changePassword', 'Logincontroller::changePasswordForm');
+$routes->post('changePassword', 'Logincontroller::changePassword');
 
 
 // role module

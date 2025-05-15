@@ -34,39 +34,40 @@ class Logincontroller extends BaseController
     // }
 
     public function index()
-{
-    if (!session()->get('logged_in')) {
-        return redirect()->to('/login'); 
+    {
+        if (!session()->get('logged_in')) {
+            return redirect()->to('/login');
+        }
+
+        $data = [
+            'empname'        => session()->get('empname'),
+            'user_type'      => session()->get('user_type'),
+            'role_id'        => session()->get('role_id'),
+            'permissions'    => session()->get('permissions') ?? [],
+            'showRoleAlert'  => session()->get('user_type') === 'employee' && empty(session()->get('role_id')),
+        ];
+
+        $db = \Config\Database::connect();
+
+        $totalProducts = $db->table('products')
+            ->where('deleted_at', null)
+            ->countAllResults();
+
+        $totalStores = $db->table('stores')
+            ->where('deleted_at', null)
+            ->countAllResults();
+
+        $data['totalProducts'] = $totalProducts;
+        $data['totalStores'] = $totalStores;
+
+        return view('pages/index', $data);
     }
-
-    $data = [
-        'empname'        => session()->get('empname'),
-        'user_type'      => session()->get('user_type'),
-        'role_id'        => session()->get('role_id'),
-        'permissions'    => session()->get('permissions') ?? [],
-        'showRoleAlert'  => session()->get('user_type') === 'employee' && empty(session()->get('role_id')),
-    ];
-
-    $db = \Config\Database::connect();
-
-    $totalProducts = $db->table('products')
-                        ->where('deleted_at', null)
-                        ->countAllResults();
-
-    $totalStores = $db->table('stores')
-                      ->where('deleted_at', null)
-                      ->countAllResults();
-
-    $data['totalProducts'] = $totalProducts;
-    $data['totalStores'] = $totalStores;
-
-    return view('pages/index', $data);
-}
 
     public function login()
     {
         return view('pages/login');
     }
+
     public function dologin()
     {
         helper(['form']);
@@ -92,12 +93,13 @@ class Logincontroller extends BaseController
 
         $db = \Config\Database::connect();
 
+        // Attempt login as Admin
         $builderAdmin = $db->table('admins');
         $builderAdmin->where('email', $email);
         $admin = $builderAdmin->get()->getRowArray();
 
-        if ($admin) {
-            if ($password === $admin['password']) {
+        if ($admin) { 
+            if (password_verify($password, $admin['password'])) {
                 $role_id = $admin['role_id'] ?? null;
                 $permissions = [];
 
@@ -110,7 +112,7 @@ class Logincontroller extends BaseController
 
                 $session->set([
                     'id'         => $admin['id'],
-                    'username'   => $admin['name'],
+                    'username'   => $admin['email'],
                     'logged_in'  => true,
                     'permissions' => $permissions,
                     'user_type'  => 'admin'
@@ -123,12 +125,13 @@ class Logincontroller extends BaseController
             }
         }
 
+        // Attempt login as Employee
         $builderEmployee = $db->table('employees');
         $builderEmployee->where('LOWER(email)', strtolower($email));
         $employee = $builderEmployee->get()->getRowArray();
 
         if ($employee) {
-            if ($password === $employee['password']) {
+            if (password_verify($password, $employee['password'])) {
                 $role_id = $employee['role_id'] ?? null;
                 $roleName = '';
 
@@ -163,12 +166,47 @@ class Logincontroller extends BaseController
             }
         }
 
-        // --- Login Failed ---
+        // If neither admin nor employee found
         $session->setFlashdata('error', 'Invalid credentials');
         return redirect()->to('/login');
     }
 
+    public function changePasswordForm()
+    {
+        return view('pages/changePassword');
+    }
 
+    public function changePassword()
+    {
+        $session = session();
+        $userId = $session->get('id');
+        $oldPassword = $this->request->getPost('old_password');
+        $newPassword = $this->request->getPost('new_password');
+        $confirmPassword = $this->request->getPost('confirm_password');
+
+        $adminmodel = new AdminModel();
+        $user = $adminmodel->find($userId);
+
+        if (!$user || !password_verify($oldPassword, $user['password'])) {
+            return redirect()->back()->with('error', 'Old password is incorrect.');
+        }
+        
+        // if (!$user || $oldPassword !== $user['password']) {
+        //     return redirect()->back()->with('error', 'Old password is incorrect.');
+        // }
+
+        if ($newPassword !== $confirmPassword) {
+            return redirect()->back()->with('error', 'New passwords do not match.');
+        }
+
+        $adminmodel->update($userId, [
+            'password' => password_hash($newPassword, PASSWORD_DEFAULT)
+        ]);
+
+        // return redirect()->back()->with('success', 'Password changed successfully.');
+        return redirect()->to('/')->with('success', 'Password changed successfully.');
+
+    }
 
 
     public function register()
@@ -204,7 +242,7 @@ class Logincontroller extends BaseController
             ],
             'email' => [
                 'label' => 'Email Address',
-                'rules' => 'required|valid_email|is_unique[admins.username]',
+                'rules' => 'required|valid_email|is_unique[admins.email]',
                 'errors' => [
                     'required' => 'Email is required.',
                     'valid_email' => 'Please enter a valid email address.',
