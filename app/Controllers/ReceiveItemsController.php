@@ -212,7 +212,7 @@ class ReceiveItemsController extends BaseController
         $service = new CommonService();
         $deleted = $service->softDelete('transfersitems', 'transfer_item_id', $receiveId, $userId);
 
-        if (!$deleted) { Github5105@Pass
+        if (!$deleted) { 
             return $this->response->setJSON([
                 'status' => 'error',
                 'message' => 'Failed to delete Receive item.'
