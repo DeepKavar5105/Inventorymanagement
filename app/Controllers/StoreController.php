@@ -131,7 +131,9 @@ class StoreController extends BaseController
             'password'      => password_hash($this->request->getPost('password'), PASSWORD_BCRYPT),
             // 'phone'         => $this->request->getPost('phone'),
             'address'       => $this->request->getPost('address'),
-            'status'        => $this->request->getPost('status')
+            'status'        => $this->request->getPost('status'),
+            'created_at'    => date('Y-m-d H:i:s',time()),
+            'created_By'    => session()->get('id'),
         ];
         // print_r($data);die;
         if ($this->StoreModel->insert($data)) {
@@ -195,7 +197,9 @@ class StoreController extends BaseController
             'contactNumber' => $this->request->getPost('contactNumber'),
             'email'         => $this->request->getPost('email'),
             'address'       => $this->request->getPost('address'),
-            'status'        => $this->request->getPost('status')
+            'status'        => $this->request->getPost('status'),
+            'updated_at'    => date('Y-m-d H:i:s',time()),
+            'updated_By'    => session()->get('id'),
         ];
 
         $password = $this->request->getPost('password');
@@ -213,15 +217,6 @@ class StoreController extends BaseController
         ]);
     }
 
-    // public function delete()
-    // {
-    //     $storeId = $this->request->getPost('storeId');
-    //     if ($this->StoreModel->delete($storeId)) {
-    //         return $this->response->setJSON(['status' => 'success', 'message' => 'Store deleted successfully!']);
-    //     } else {
-    //         return $this->response->setJSON(['status' => 'error', 'message' => 'Failed to delete store.']);
-    //     }
-    // }
      public function delete()
     {
         $storeId = $this->request->getPost('storeId');

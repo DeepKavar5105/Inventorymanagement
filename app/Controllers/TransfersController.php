@@ -128,7 +128,8 @@ class TransfersController extends BaseController
                 'toStoreId'     => $toStoreId,
                 'specialNotes'  => $notes,
                 'status'        => $status,
-                'created_at'    => date('Y-m-d H:i:s', time())
+                'created_at'    => date('Y-m-d H:i:s', time()),
+                'created_By'    => session()->get('id'),
             ];
             $transferId = $transferModel->insert($transferData);
 
@@ -151,7 +152,8 @@ class TransfersController extends BaseController
                     'transferId'        => $transferId,
                     'productId'         => $productId,
                     'transferQuantity'  => $quantity,
-                    'created_at'        => date('Y-m-d H:i:s', time())
+                    'created_at'        => date('Y-m-d H:i:s', time()),
+                    'created_By'        => session()->get('id'),
                 ];
 
 

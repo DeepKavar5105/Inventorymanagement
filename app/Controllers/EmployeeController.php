@@ -99,7 +99,7 @@ class EmployeeController extends BaseController
         $roleModel = new \App\Models\RoleModel();
         $employeeModel = new \App\Models\EmployeeModel();
 
-        $data['stores'] = $storeModel->findAll();
+        $data['stores'] = $storeModel->getstoredata();
         $data['roles'] = $roleModel->findAll();
         $data['employee'] = $id ? $employeeModel->find($id) : null;
         // print_r($data['employee']);die;
@@ -200,24 +200,25 @@ class EmployeeController extends BaseController
             ]);
         }
 
-        // Handle image
         $image = $this->request->getFile('profile');
         $newName = $empId ? null : 'default.jpg';
 
         if ($image && $image->isValid() && !$image->hasMoved()) {
-            $newName = $image->getClientName(); // Save actual file name
+            $newName = $image->getClientName(); 
             $image->move(ROOTPATH . 'public/uploads/profile', $newName);
         }
-        
+        $role_id = $this->request->getPost('rolename');
+        // print_r($role_id);die;
         // Prepare data
         $data = [
             'accessStoreId'  => $this->request->getPost('accessStoreId'),
-            'role_id'        => $this->request->getPost('rolename'),
+            'role_id'        => $role_id,
             'employee_code'  => $this->request->getPost('code'),
             'empname'        => $this->request->getPost('empname'),
             'email'          => $this->request->getPost('email'),
             'mobile'         => $this->request->getPost('mobile'),
-            'status'         => $this->request->getPost('status')
+            'status'         => $this->request->getPost('status'),
+            'created_By'     => session()->get('id'),
         ];
 
         if ($this->request->getPost('password')) {
@@ -319,6 +320,7 @@ class EmployeeController extends BaseController
             'email'   => $this->request->getPost('email'),
             'mobile'  => $this->request->getPost('mobile'),
             'status'  => $this->request->getPost('status'),
+            'updated_By' => session()->get('id'),
         ];
 
         if ($newName) {

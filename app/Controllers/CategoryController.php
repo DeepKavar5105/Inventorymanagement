@@ -105,6 +105,8 @@ class CategoryController extends BaseController
             'storeId' => $storeId,
             'catName' => $catName,
             'status'  => $status,
+            'created_By' => session()->get('id'),
+            'created_at' => Time::now(),
         ];
 
         $db = \Config\Database::connect();
@@ -171,7 +173,8 @@ class CategoryController extends BaseController
             'storeId'    => $this->request->getPost('storeId'),
             'catName'    => $this->request->getPost('catName'),
             'status'     => $this->request->getPost('status'),
-            'updated_By' => $this->request->getPost('updated_By')
+            'updated_By' => session()->get('id'),
+            'updated_at' => Time::now(),
         ];
 
         if ($this->CategoryModel->update($categoryId, $data)) {

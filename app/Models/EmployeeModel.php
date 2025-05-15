@@ -12,8 +12,9 @@ class EmployeeModel extends Model
     
     protected $allowedFields    = [
         'employee_code',
+        'role_id',
         'activeStoreId',
-        'accessStoreId',
+        'accessStoreId',    
         'empname',
         'email',
         'password',

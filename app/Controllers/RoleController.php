@@ -7,6 +7,7 @@ use App\Models\PermissionModel;
 use App\Models\RoleModel;
 use App\Models\EmployeeModel;
 use App\Libraries\CommonService;
+use CodeIgniter\I18n\Time;
 
 class RoleController extends BaseController
 {
@@ -149,7 +150,8 @@ class RoleController extends BaseController
                     'importAccess'  => $perm['importAccess'] ?? 0,
                     'exportAccess'  => $perm['exportAccess'] ?? 0,
                     'created_at'    => date('Y-m-d H:i:s', time()),
-                    'updated_at'    => date('Y-m-d H:i:s', time())
+                    'updated_at'    => date('Y-m-d H:i:s', time()),
+                    'created_By'    => session()->get('id'),
                 ];
             }
 
@@ -270,6 +272,8 @@ class RoleController extends BaseController
                 'deleteAccess'  => $access['delete'] ?? 0,
                 'importAccess'  => $access['importAccess'] ?? 0,
                 'exportAccess'  => $access['exportAccess'] ?? 0,
+                'updated_at'    => Time::now(),
+                'updated_By'    => session()->get('id'),
             ];
 
             if ($existing) {

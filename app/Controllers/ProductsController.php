@@ -7,6 +7,7 @@ use App\Models\ProductModel;
 use App\Models\StoreModel;
 use CodeIgniter\Controller;
 use App\Libraries\CommonService;
+use CodeIgniter\I18n\Time;
 
 class ProductsController extends BaseController
 {
@@ -155,7 +156,9 @@ class ProductsController extends BaseController
             'barcode' => $this->request->getPost('barcode'),
             'quantity' => $this->request->getPost('quantity'),
             'productImage' => $newName,
-            'status' => $this->request->getPost('product_status')
+            'status' => $this->request->getPost('product_status'),
+            'created_at' => Time::now(),
+            'created_By' => session()->get('id')
         ];
 
         $productModel = new ProductModel();
@@ -259,7 +262,7 @@ class ProductsController extends BaseController
         'barcode'     => $barcode,
         'quantity'    => $this->request->getPost('quantity'),
         'status'      => $this->request->getPost('product_status'),
-        'updated_By'  => session()->get('user_id')
+        'updated_By'  => session()->get('id')
     ];
 
     if ($newName) {

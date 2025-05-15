@@ -8,6 +8,7 @@ use App\Models\EmployeeModel;
 use App\Models\PermissionModel;
 use App\Models\RoleModel;
 use App\Models\PasswordResetModel;
+use CodeIgniter\I18n\Time;
 
 class Logincontroller extends BaseController
 {
@@ -45,8 +46,18 @@ class Logincontroller extends BaseController
             ->where('deleted_at', null)
             ->countAllResults();
 
+        $totalCategories = $db->table('categorys')
+            ->where('deleted_at', null)
+            ->countAllResults();
+
+        $totalEmployees = $db->table('employees')
+            ->where('deleted_at', null)
+            ->countAllResults();
+
         $data['totalProducts'] = $totalProducts;
         $data['totalStores'] = $totalStores;
+        $data['totalCategories'] = $totalCategories;
+        $data['totalEmployees'] = $totalEmployees;
 
         return view('pages/index', $data);
     }
@@ -198,7 +209,10 @@ class Logincontroller extends BaseController
     public function register()
     {
         $rolemodel = new RoleModel();
+        $storeModel = new \App\Models\StoreModel();
+        $data['stores'] = $storeModel->getstoredata();
         $data['role'] = $rolemodel->findAll();
+
         return view('pages/register', $data);
     }
 
@@ -250,6 +264,12 @@ class Logincontroller extends BaseController
                 'rules' => 'required',
                 'errors' => [
                     'required' => 'User type is required.'
+                ]
+            ],
+            'store' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => 'Store is required.'
                 ]
             ],
             'password' => [
@@ -304,7 +324,8 @@ class Logincontroller extends BaseController
             'role_id'    => $this->request->getPost('usertype'),
             'email'      => $this->request->getPost('email'),
             'password'   => password_hash($this->request->getPost('password'), PASSWORD_BCRYPT),
-            'profile'    => $newName
+            'profile'    => $newName,
+            'created_at' => Time::now(),
         ];
 
         $adminModel->insert($data);
@@ -365,7 +386,7 @@ class Logincontroller extends BaseController
         }
 
         return view('pages/reset_password', ['token' => $token]);
-    }
+    }   
 
     public function resetPassword()
     {

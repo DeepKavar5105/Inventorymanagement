@@ -15,26 +15,31 @@
     <h4 class="alert-heading">
         Welcome <?= ucfirst(session('user_type')) ?>!
     </h4>
-</div>  
+</div>
 
 <div class="row">
-            <div class="col-xl-3 col-md-6">
-                <div class="card bg-primary text-dark mb-4">
-                    <div class="card-body">
-                        Total Products: <?= $totalProducts; ?>
-                    </div>
-                </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-primary text-dark mb-4">
+            <div class="card-body">
+                Total Products: <?= $totalProducts; ?>
             </div>
-            <div class="col-xl-3 col-md-6">
-                <div class="card bg-warning text-dark mb-4">
-                    <div class="card-body">
-                        Total Stores: <?= $totalStores; ?>
-                    </div>
-                </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-warning text-dark mb-4">
+            <div class="card-body">
+                Total Stores: <?= $totalStores; ?>
             </div>
+        </div>
+    </div>
     <div class="col-xl-3 col-md-6">
         <div class="card bg-success text-dark mb-4">
-            <div class="card-body">Success Card</div>
+            <div class="card-body">Total Categorys: <?= $totalCategories; ?></div>
+        </div>
+    </div>
+     <div class="col-xl-3 col-md-6">
+        <div class="card bg-info text-dark mb-4">
+            <div class="card-body">Total Employees: <?= $totalEmployees; ?></div>
         </div>
     </div>
 </div>
@@ -44,10 +49,10 @@
         <div class="card mb-4">
             <div class="card-header">
                 <i class="fas fa-chart-area me-1"></i>
-                Area Chart Example
+                Store Chart
             </div>
             <div class="card-body">
-                <canvas id="myAreaChart" width="100%" height="40"></canvas>
+                <canvas id="" width="100%" height="40"></canvas>
             </div>
         </div>
     </div>
@@ -55,7 +60,7 @@
         <div class="card mb-4">
             <div class="card-header">
                 <i class="fas fa-chart-bar me-1"></i>
-                Bar Chart Example
+                Product Chart
             </div>
             <div class="card-body">
                 <canvas id="myBarChart" width="100%" height="40"></canvas>

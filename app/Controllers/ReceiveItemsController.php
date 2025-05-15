@@ -71,32 +71,33 @@ class ReceiveItemsController extends BaseController
     }
 
 
-    public function store()
-    {
-        $storeId = $this->request->getPost('store_id');
-        $productId = $this->request->getPost('product_id');
-        $quantity = $this->request->getPost('quantity');
+    // public function store()
+    // {
+    //     $storeId = $this->request->getPost('store_id');
+    //     $productId = $this->request->getPost('product_id');
+    //     $quantity = $this->request->getPost('quantity');
 
-        $trasferModel = new TransfersModel();
+    //     $trasferModel = new TransfersModel();
 
-        $existing = $trasferModel->where([
-            'store_id' => $storeId,
-            'product_id' => $productId
-        ])->first();
+    //     $existing = $trasferModel->where([
+    //         'store_id' => $storeId,
+    //         'product_id' => $productId
+    //     ])->first();
 
-        if ($existing) {
-            $trasferModel->update($existing['transfers_id'], [
-                'quantity' => $existing['quantity'] + $quantity
-            ]);
-        } else {
-            $trasferModel->insert([
-                'store_id' => $storeId,
-                'product_id' => $productId,
-                'quantity' => $quantity
-            ]);
-        }
-        return $this->response->setJSON(['status' => 'success']);
-    }
+    //     if ($existing) {
+    //         $trasferModel->update($existing['transfers_id'], [
+    //             'quantity' => $existing['quantity'] + $quantity
+    //         ]);
+    //     } else {
+    //         $trasferModel->insert([
+    //             'store_id' => $storeId,
+    //             'product_id' => $productId,
+    //             'quantity' => $quantity
+
+    //         ]);
+    //     }
+    //     return $this->response->setJSON(['status' => 'success']);
+    // }
 
 
     public function update()
@@ -193,6 +194,7 @@ class ReceiveItemsController extends BaseController
             'quantityAfterChange'  => $toQtyBefore + $rquantity,
             'actualQuantity'       => $rquantity,
             'created_at'           => date('Y-m-d H:i:s', time()),
+            'updated_By'           => session()->get('id'),
         ]);
 
         return json_encode(['success' => true]);
