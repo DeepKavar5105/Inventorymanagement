@@ -208,7 +208,7 @@ class EmployeeController extends BaseController
             $newName = $image->getClientName(); // Save actual file name
             $image->move(ROOTPATH . 'public/uploads/profile', $newName);
         }
-
+        
         // Prepare data
         $data = [
             'accessStoreId'  => $this->request->getPost('accessStoreId'),

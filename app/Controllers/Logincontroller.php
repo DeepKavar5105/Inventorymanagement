@@ -7,6 +7,7 @@ use App\Models\AdminModel;
 use App\Models\EmployeeModel;
 use App\Models\PermissionModel;
 use App\Models\RoleModel;
+use App\Models\PasswordResetModel;
 
 class Logincontroller extends BaseController
 {
@@ -16,23 +17,10 @@ class Logincontroller extends BaseController
     {
         $this->roleModel = new RoleModel();
     }
-    // public function index()
-    // {
-    //     if (!session()->get('logged_in')) {
-    //         return redirect()->to('/login');
-    //     }
-
-    //     $data = [
-    //         'empname'        => session()->get('empname'),
-    //         'user_type'      => session()->get('user_type'),
-    //         'role_id'        => session()->get('role_id'),
-    //         'permissions'    => session()->get('permissions') ?? [],
-    //         'showRoleAlert'  => session()->get('user_type') === 'employee' && empty(session()->get('role_id')),
-    //     ];
-
-    //     return view('pages/index', $data);
-    // }
-
+    public function forgetPasswordForm()
+    {
+        return view('pages/forgetPssword');
+    }
     public function index()
     {
         if (!session()->get('logged_in')) {
@@ -98,7 +86,7 @@ class Logincontroller extends BaseController
         $builderAdmin->where('email', $email);
         $admin = $builderAdmin->get()->getRowArray();
 
-        if ($admin) { 
+        if ($admin) {
             if (password_verify($password, $admin['password'])) {
                 $role_id = $admin['role_id'] ?? null;
                 $permissions = [];
@@ -190,11 +178,11 @@ class Logincontroller extends BaseController
         if (!$user || !password_verify($oldPassword, $user['password'])) {
             return redirect()->back()->with('error', 'Old password is incorrect.');
         }
-        
+
         // if (!$user || $oldPassword !== $user['password']) {
         //     return redirect()->back()->with('error', 'Old password is incorrect.');
         // }
-        // Check if new password and confirm password match
+
         if ($newPassword !== $confirmPassword) {
             return redirect()->back()->with('error', 'New passwords do not match.');
         }
@@ -203,9 +191,7 @@ class Logincontroller extends BaseController
             'password' => password_hash($newPassword, PASSWORD_DEFAULT)
         ]);
 
-        // return redirect()->back()->with('success', 'Password changed successfully.');
         return redirect()->to('/')->with('success', 'Password changed successfully.');
-
     }
 
 
@@ -279,7 +265,7 @@ class Logincontroller extends BaseController
                 'label' => 'Confirm Password',
                 'rules' => 'required|matches[password]',
                 'errors' => [
-                    'required' => 'Confirm is required.',
+                    'required' => 'Confirm Password is required.',
                     'matches' => 'Confirm Password must match the Password.'
                 ]
             ]
@@ -291,7 +277,6 @@ class Logincontroller extends BaseController
                 'errors' => $this->validator->getErrors()
             ]);
         }
-
 
         $profileImage = $this->request->getFile('profile');
         $newName = 'default.jpg';
@@ -310,17 +295,18 @@ class Logincontroller extends BaseController
             $newName = $profileImage->getRandomName();
             $profileImage->move('uploads/userprofile/', $newName);
         }
+
         $adminModel = new \App\Models\AdminModel();
+
         $data = [
-            'name' => $this->request->getPost('name'),
-            'mobile' => $this->request->getPost('phone'),
-            'role_id' => $this->request->getPost('usertype'),
-            'username' => $this->request->getPost('email'),
-            'password' => password_hash($this->request->getPost('password'), PASSWORD_BCRYPT)
+            'name'       => $this->request->getPost('name'),
+            'mobile'     => $this->request->getPost('phone'),
+            'role_id'    => $this->request->getPost('usertype'),
+            'email'      => $this->request->getPost('email'),
+            'password'   => password_hash($this->request->getPost('password'), PASSWORD_BCRYPT),
+            'profile'    => $newName
         ];
-        if ($newName) {
-            $data['profile'] = $newName;
-        }
+
         $adminModel->insert($data);
 
         return $this->response->setJSON([
@@ -329,10 +315,82 @@ class Logincontroller extends BaseController
         ]);
     }
 
-
     public function logout()
     {
         session()->destroy();
         return redirect()->to('/login');
+    }
+
+    public function sendResetLink()
+    {
+        $email = $this->request->getPost('email');
+        $adminmodel = new AdminModel();
+        $user = $adminmodel->where('email', $email)->first();
+
+        if (!$user) {
+            return redirect()->back()->with('error', 'Email not found.');
+        }
+
+        $token = bin2hex(random_bytes(32));
+        $expires = date('Y-m-d H:i:s', strtotime('+1 hour'));
+
+        $resetModel = new PasswordResetModel();
+        $resetModel->insert([
+            'email' => $email,
+            'token' => $token,
+            'expires_at' => $expires
+        ]);
+
+        $link = base_url("reset-password/$token");
+
+        $message = "Click the following link to reset your password: <a href='$link'>$link</a>";
+        
+        $emailService = \Config\Services::email();
+        $emailService->setTo($email);
+        $emailService->setSubject('Password Reset');
+        $emailService->setMessage($message);
+       
+        $emailService->send();
+       
+        return redirect()->back()->with('message', 'Reset link sent to your email.');
+    }
+
+    public function resetPasswordForm($token)
+    {
+        $resetModel = new PasswordResetModel();
+        $record = $resetModel->where('token', $token)->first();
+
+        if (!$record || strtotime($record['expires_at']) < time()) {
+            return 'Token expired or invalid';
+        }
+
+        return view('pages/reset_password', ['token' => $token]);
+    }
+
+    public function resetPassword()
+    {
+        $token = $this->request->getPost('token');
+        $password = $this->request->getPost('password');
+        $confirm = $this->request->getPost('confirm_password');
+        
+        if ($password !== $confirm) {
+            return redirect()->back()->with('error', 'Passwords do not match.');
+        }
+
+        $resetModel = new PasswordResetModel(); 
+        $record = $resetModel->where('token', $token)->first();
+
+        if (!$record || strtotime($record['expires_at']) < time()) {
+            return 'Invalid or expired token';
+        }
+
+        $adminmodel = new AdminModel();
+        $adminmodel->where('email', $record['email'])
+            ->set(['password' => password_hash($password, PASSWORD_DEFAULT)])
+            ->update();
+
+        $resetModel->where('email', $record['email'])->delete();
+
+        return redirect('login')->with('message', 'Password successfully updated.');
     }
 }

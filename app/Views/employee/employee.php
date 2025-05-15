@@ -9,14 +9,14 @@
                 <i class="fas fa-plus"></i> Add Employee
             </a>
         <?php endif; ?>
+        <?php if (!empty($permissions['Employee']['importAccess']) && $permissions['Employee']['importAccess'] == 1): ?>
           <a href="<?= base_url('employee/addmultipalemployee') ?>" class="btn btn-success">
                 <i class="fas fa-plus"></i> Add Multipal Employee
             </a>    
-
+        <?php endif; ?>
         <!-- <button class="btn btn-danger" id="delete-multiple-employee-btn">
                                 <i class="fas fa-trash-alt"></i> Delete Selected
                             </button> -->
-
     </div>
 </div>
 
@@ -53,12 +53,13 @@
                         <i class="fas fa-undo me-1"></i> Reset
                     </a>
                 </div>
-
+                <?php if (!empty($permissions['Employee']['exportAccess']) && $permissions['Employee']['exportAccess'] == 1): ?>
                 <div class="col-md-3 ">
                     <button type="button" id="Export" class="btn btn-outline-success mt-3 w-100">
                         <i class="fas fa-file-excel me-1"></i> Export to Excel
                     </button>
                 </div>
+                <?php endif; ?>
             </div>
         </form>
     </div>

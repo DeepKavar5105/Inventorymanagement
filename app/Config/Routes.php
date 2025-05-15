@@ -9,9 +9,14 @@ $routes->post('dologin', 'Logincontroller::dologin'); // Submit login
 $routes->get('logout', 'Logincontroller::logout'); // Logout user
 $routes->get('index', 'Logincontroller::index', ['filter' => 'auth']); // Protected dashboard
 $routes->get('/dashboard', 'Dashboard::index');
+
 $routes->get('changePassword', 'Logincontroller::changePasswordForm');
 $routes->post('changePassword', 'Logincontroller::changePassword');
 
+$routes->get('forgetPssword', 'Logincontroller::forgetPasswordForm');
+$routes->post('send-reset-link', 'Logincontroller::sendResetLink');
+$routes->get('reset-password/(:segment)', 'Logincontroller::resetPasswordForm/$1');
+$routes->post('reset-password', 'Logincontroller::resetPassword');
 
 // role module
 $routes->get('role', 'RoleController::role'); // for view 
