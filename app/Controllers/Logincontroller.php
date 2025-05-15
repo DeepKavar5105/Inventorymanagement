@@ -194,7 +194,7 @@ class Logincontroller extends BaseController
         // if (!$user || $oldPassword !== $user['password']) {
         //     return redirect()->back()->with('error', 'Old password is incorrect.');
         // }
-
+        // Check if new password and confirm password match
         if ($newPassword !== $confirmPassword) {
             return redirect()->back()->with('error', 'New passwords do not match.');
         }
