@@ -52,7 +52,7 @@
                 Store Chart
             </div>
             <div class="card-body">
-                <canvas id="" width="100%" height="40"></canvas>
+                <canvas id="storeChart" width="100%" height="40"></canvas>
             </div>
         </div>
     </div>
@@ -63,7 +63,7 @@
                 Product Chart
             </div>
             <div class="card-body">
-                <canvas id="myBarChart" width="100%" height="40"></canvas>
+                <canvas id="productChart" width="100%" height="40"></canvas>
             </div>
         </div>
     </div>
@@ -120,4 +120,5 @@
 <?= $this->endSection(); ?>
 <?= $this->section('scripts'); ?>
 <script src="js/scripts.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <?= $this->endSection(); ?>

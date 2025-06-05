@@ -338,23 +338,6 @@ class EmployeeController extends BaseController
     }
 
 
-    // public function delete()
-    // {
-    //     $empId = $this->request->getPost('empId');
-
-    //     if ($this->employeeModel->delete($empId)) {
-    //         return $this->response->setJSON([
-    //             'status'  => 'success',
-    //             'message' => 'Employee deleted successfully!'
-    //         ]);
-    //     } else {
-    //         return $this->response->setJSON([
-    //             'status'  => 'error',
-    //             'message' => 'Failed to delete employee.'
-    //         ]);
-    //     }
-    // }
-
       public function delete()
     {
         $empId = $this->request->getPost('empId');
@@ -382,32 +365,6 @@ class EmployeeController extends BaseController
         ]);
     }
 
-
-
-    // public function deleteMultipleData()
-    // {
-    //     $empIds = $this->request->getPost('empIds');
-
-    //     //  Convert to array if only one ID was sent as string
-    //     if (!is_array($empIds)) {
-    //         $empIds = [$empIds];
-    //     }
-
-    //     if (!empty($empIds)) {
-    //         $this->employeeModel->whereIn('emp_id', $empIds)->delete();
-
-    //         return $this->response->setJSON([
-    //             'status' => 'success',
-    //             'message' => 'Employees deleted successfully'
-    //         ]);
-    //     }
-
-    //     return $this->response->setJSON([
-    //         'status' => 'error',
-    //         'message' => 'No employees selected'
-    //     ]);
-    // }
-
     public function checkBeforeDownload()
     {
         return $this->response->setJSON(['status' => 'ok']);
@@ -418,7 +375,6 @@ class EmployeeController extends BaseController
         $db = \Config\Database::connect();
         $builder = $db->table('employees');
         $results = $builder->get()->getResultArray();
-
         foreach ($results as &$row) {
             $row['status'] = $row['status'] == 1 ? 'Active' : 'Inactive';
         }
@@ -435,8 +391,7 @@ class EmployeeController extends BaseController
     private function createCSV(array $results): string
     {
         $output = fopen('php://temp', 'r+');
-        fputcsv($output, ['employee_code', 'empname', 'email', 'mobile', 'status']); // header 'created_By', 'updated_By', 'deleted_By'
-
+        fputcsv($output, ['employee_code', 'empname', 'email', 'mobile', 'status']); 
         foreach ($results as $row) {
             fputcsv($output, [$row['employee_code'], $row['empname'], $row['email'], $row['mobile'], $row['status']]);
         }

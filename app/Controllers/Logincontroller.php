@@ -8,6 +8,7 @@ use App\Models\EmployeeModel;
 use App\Models\PermissionModel;
 use App\Models\RoleModel;
 use App\Models\PasswordResetModel;
+use App\Models\ProductModel;
 use CodeIgniter\I18n\Time;
 
 class Logincontroller extends BaseController
@@ -117,10 +118,10 @@ class Logincontroller extends BaseController
                     'user_type'  => 'admin'
                 ]);
 
-                return redirect()->to('/index');
+                return redirect()->to('index');
             } else {
                 $session->setFlashdata('error', 'Invalid password');
-                return redirect()->to('/login');
+                return redirect()->to('login');
             }
         }
 
@@ -305,7 +306,8 @@ class Logincontroller extends BaseController
             $extension = $profileImage->getExtension();
             $allowedExtensions = ['jpg', 'jpeg', 'png'];
 
-            if (!in_array(strtolower($extension), $allowedExtensions)) {
+            if (!in_array(strtolower($extension), $allowedExtensions))
+            {
                 return $this->response->setJSON([
                     'status' => 'error',
                     'errors' => ['profile' => 'Only JPG, JPEG, or PNG images are allowed.']
