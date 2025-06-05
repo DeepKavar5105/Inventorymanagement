@@ -302,7 +302,8 @@ class Logincontroller extends BaseController
         $profileImage = $this->request->getFile('profile');
         $newName = 'default.jpg';
 
-        if ($profileImage && $profileImage->isValid() && !$profileImage->hasMoved()) {
+        if ($profileImage && $profileImage->isValid() && !$profileImage->hasMoved()) 
+        {
             $extension = $profileImage->getExtension();
             $allowedExtensions = ['jpg', 'jpeg', 'png'];
 

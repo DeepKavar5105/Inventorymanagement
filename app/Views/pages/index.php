@@ -37,7 +37,7 @@
             <div class="card-body">Total Categorys: <?= $totalCategories; ?></div>
         </div>
     </div>
-     <div class="col-xl-3 col-md-6">
+    <div class="col-xl-3 col-md-6">
         <div class="card bg-info text-dark mb-4">
             <div class="card-body">Total Employees: <?= $totalEmployees; ?></div>
         </div>
@@ -104,6 +104,14 @@
                     <td>61</td>
                     <td>2011/04/25</td>
                     <td>$320,800</td>
+                </tr>
+                <tr>
+                    <td>Donna Snider</td>
+                    <td>Customer Support</td>
+                    <td>New York</td>
+                    <td>27</td>
+                    <td>2011/01/25</td>
+                    <td>$112,000</td>
                 </tr>
                 <tr>
                     <td>Donna Snider</td>
